@@ -23,7 +23,6 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlinVersion"
-    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
 compileKotlin {
@@ -33,3 +32,4 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+apply from: "./gradle/scripts/tests.gradle"
