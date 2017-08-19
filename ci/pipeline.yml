@@ -1,0 +1,26 @@
+resources:
+- name: source-code
+  type: git
+  source:
+    uri: https://github.com/codebandits/rebaser.git
+    branch: master
+
+jobs:
+- name: tests
+  plan:
+  - get: source-code
+    trigger: true
+  - task: unit tests
+    config:
+      inputs:
+      - name: source-code
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: openjdk
+          tag: 8-jdk
+      run:
+        dir: source-code
+        path: ./gradlew
+        args: ["test"]
