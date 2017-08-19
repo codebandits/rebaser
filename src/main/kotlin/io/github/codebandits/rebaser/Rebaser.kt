@@ -1,5 +1,7 @@
 package io.github.codebandits.rebaser
 
+import kotlin.math.log
+
 class Rebaser {
 
     private val base64Charset = charArrayOf(
@@ -11,23 +13,17 @@ class Rebaser {
     )
 
     fun encode(input: ByteArray): String {
-
-        return input.asList().chunked(3)
-                .map { it.toByteArray() }
-                .map { mergeBytes(it) }
-                .map { splitToNumbers(it) }
-                .flatMap(IntArray::toList)
-                .map { base64Charset.get(it) }
+        val bitsPerCharacter = bitsPerCharacter(base64Charset.size)
+        val bytesAsInts = redistributeBytesToInts(bytes = input, bitsPerInt = bitsPerCharacter)
+        return bytesAsInts
+                .map { base64Charset[it] }
                 .joinToString("")
     }
 
     fun decode(input: String): ByteArray {
-
-        return input.toCharArray()
-                .map(base64Charset::indexOf)
-                .chunked(4)
-                .map { mergeNumbers(it.toIntArray()) }
-                .flatMap { splitToBytes(it).toList() }
-                .toByteArray()
+        val stringAsInts = input.toCharArray().map(base64Charset::indexOf).toIntArray()
+        return redistributeIntsToBytes(ints = stringAsInts, bitsPerInt = bitsPerCharacter(base64Charset.size))
     }
+
+    private fun bitsPerCharacter(charsetSize: Int) = log(a = charsetSize.toDouble(), base = 2.0).toInt()
 }

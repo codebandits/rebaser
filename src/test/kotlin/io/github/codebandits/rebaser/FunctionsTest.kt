@@ -1,42 +1,48 @@
 package io.github.codebandits.rebaser
 
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertArrayEquals
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class FunctionsTest {
 
     @Test
-    fun `should split a 24-bit number into 6-bit numbers`() {
+    fun `redistributeBytesToInts should redistribute 3 bytes into 4 6-bit numbers`() {
 
-        val input = 6447476L
+        val output = redistributeBytesToInts(byteArrayOf(0b01100010, 0b01100001, 0b01110100), 6)
 
-        val output = splitToNumbers(input)
-
-        Assertions.assertArrayEquals(intArrayOf(24, 38, 5, 52), output)
+        assertArrayEquals(intArrayOf(0b011000, 0b100110, 0b000101, 0b110100), output)
     }
 
     @Test
-    fun `should merge 3 bytes into a 24-bit number`() {
+    fun `redistributeBytesToInts should redistribute 4 bytes into 6 6-bit numbers with padding`() {
 
-        val bytes = "bat".toByteArray()
+        val output = redistributeBytesToInts(byteArrayOf(0b01100010, 0b01100001, 0b01110100, 0b01101101), 6)
 
-        val output = mergeBytes(bytes)
-
-        Assertions.assertEquals(6447476L, output)
+        assertArrayEquals(intArrayOf(0b011000, 0b100110, 0b000101, 0b110100, 0b011011, 0b010000), output)
     }
 
     @Test
-    fun `should split a 24-bit number into 3 bytes`() {
+    fun `redistributeBytesToInts should redistribute 3 bytes into 5 5-bit numbers with padding`() {
 
-        val output = splitToBytes(6447476L)
+        val output = redistributeBytesToInts(byteArrayOf(0b01100010, 0b01100001, 0b01110100), 5)
 
-        Assertions.assertArrayEquals("bat".toByteArray(), output)
+        assertArrayEquals(intArrayOf(0b01100, 0b01001, 0b10000, 0b10111, 0b01000), output)
     }
 
     @Test
-    fun `should merge 6-bit numbers into a 24-bit number`() {
-        val output = mergeNumbers(intArrayOf(24, 38, 5, 52))
+    fun `redistributeIntsToBytes should redistribute 4 6-bit numbers into 3 bytes`() {
 
-        Assertions.assertEquals(6447476L, output)
+        val output = redistributeIntsToBytes(intArrayOf(0b011000, 0b100110, 0b000101, 0b110100), 6)
+
+        assertArrayEquals(byteArrayOf(0b01100010, 0b01100001, 0b01110100), output)
+    }
+
+    @Test
+    fun `redistributeIntsToBytes should redistribute 5 5-bit numbers into 3 bytes`() {
+
+        val output = redistributeIntsToBytes(intArrayOf(0b01100, 0b01001, 0b10000, 0b10111, 0b01000), 5)
+
+        assertArrayEquals(byteArrayOf(0b01100010, 0b01100001, 0b01110100), output)
     }
 }

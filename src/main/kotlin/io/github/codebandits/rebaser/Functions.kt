@@ -1,18 +1,61 @@
 package io.github.codebandits.rebaser
 
-internal fun splitToNumbers(joinedBytes: Long): IntArray =
-        intArrayOf(
-                (joinedBytes shr 18 and 63).toInt(),
-                (joinedBytes shr 12 and 63).toInt(),
-                (joinedBytes shr 6 and 63).toInt(),
-                (joinedBytes and 63).toInt()
-        )
+internal fun redistributeBytesToInts(bytes: ByteArray, bitsPerInt: Int): IntArray {
 
-internal fun mergeBytes(bytes: ByteArray): Long =
-        (bytes[0].toLong() shl 16) + (bytes[1].toLong() shl 8) + bytes[2].toLong()
+    val bitsPerByte = 8
 
-internal fun splitToBytes(input: Long): ByteArray =
-        byteArrayOf((input shr 16).toByte(), (input shr 8).toByte(), (input).toByte())
+    var bucket = 0
+    var bitsInTheBucket = 0
+    val intList = mutableListOf<Int>()
 
-internal fun mergeNumbers(ints: IntArray): Long =
-        (ints[0] shl 18).toLong() + (ints[1] shl 12).toLong() + (ints[2] shl 6).toLong() + ints[3].toLong()
+    for (byte in bytes) {
+
+        bucket = bucket shl bitsPerByte
+        bucket += byte.toInt()
+
+        bitsInTheBucket += bitsPerByte
+
+        while (bitsInTheBucket >= bitsPerInt) {
+            val shift = bitsInTheBucket - bitsPerInt
+            val mask = 2.pow(bitsInTheBucket) - 2.pow(shift)
+            intList.add(bucket and mask shr shift)
+            bitsInTheBucket -= bitsPerInt
+        }
+    }
+
+    if (bitsInTheBucket > 0) {
+        val shift = bitsPerInt - bitsInTheBucket
+        val mask = 2.pow(bitsPerInt) - 1
+        intList.add(bucket shl shift and mask)
+    }
+
+    return intList.toIntArray()
+}
+
+internal fun redistributeIntsToBytes(ints: IntArray, bitsPerInt: Int): ByteArray {
+
+    val bitsPerByte = 8
+
+    var bucket = 0
+    var bitsInTheBucket = 0
+    val byteList = mutableListOf<Byte>()
+
+    for (int in ints) {
+
+        bucket = bucket shl bitsPerInt
+        bucket += int
+
+        bitsInTheBucket += bitsPerInt
+
+        while (bitsInTheBucket >= bitsPerByte) {
+            val shift = bitsInTheBucket - bitsPerByte
+            val mask = 2.pow(bitsInTheBucket) - 2.pow(shift)
+            byteList.add((bucket and mask shr shift).toByte())
+            bitsInTheBucket -= bitsPerByte
+        }
+    }
+
+    return byteList.toByteArray()
+}
+
+internal fun Int.pow(power: Int): Int = Math.pow(this.toDouble(), power.toDouble()).toInt()
