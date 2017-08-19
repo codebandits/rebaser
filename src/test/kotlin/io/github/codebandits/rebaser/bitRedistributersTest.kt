@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class FunctionsTest {
+class bitRedistributersTest {
 
     @Test
     fun `redistributeBytesToInts should redistribute 3 bytes into 4 6-bit numbers`() {
