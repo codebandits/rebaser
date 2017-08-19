@@ -1,5 +1,7 @@
 package io.github.codebandits.rebaser
 
+private val TWOS_COMPLEMENT_MASK = 0b11111111
+
 internal fun redistributeBytesToInts(bytes: ByteArray, bitsPerInt: Int): IntArray {
 
     val bitsPerByte = 8
@@ -11,7 +13,7 @@ internal fun redistributeBytesToInts(bytes: ByteArray, bitsPerInt: Int): IntArra
     for (byte in bytes) {
 
         bucket = bucket shl bitsPerByte
-        bucket += byte.toInt()
+        bucket += byte.toInt() and TWOS_COMPLEMENT_MASK
 
         bitsInTheBucket += bitsPerByte
 
