@@ -8,14 +8,6 @@ import java.util.*
 
 class RebaserTest {
 
-    private val BASE_64_CHARSET = charArrayOf(
-            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-            'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-            'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'
-    )
-
     private val SIZE_2_CHARSET = charArrayOf('x', 'o')
 
     private val SIZE_13_CHARSET = charArrayOf('!', '@', '£', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
@@ -71,7 +63,7 @@ class RebaserTest {
         val data = byteArrayOf(-16, 8, -50, 77)
 
         val expectedEncodedString = Base64.getEncoder().withoutPadding().encodeToString(data)
-        val encodedOutput = subject.encode(data, BASE_64_CHARSET)
+        val encodedOutput = subject.encode(data, Charsets.BASE_64)
         assertEquals(expectedEncodedString, encodedOutput)
     }
 
@@ -80,7 +72,7 @@ class RebaserTest {
         val encodedData = "8AjOTQ"
 
         val expectedDecodedString = Base64.getDecoder().decode(encodedData)
-        val decodedOutput = subject.decode(encodedData, BASE_64_CHARSET)
+        val decodedOutput = subject.decode(encodedData, Charsets.BASE_64)
         assertArrayEquals(expectedDecodedString, decodedOutput)
     }
 
@@ -90,8 +82,8 @@ class RebaserTest {
         val message = "omg 🍕 lolz 🎷"
         val messageBytes = message.toByteArray()
 
-        val encodedOutput = subject.encode(messageBytes, BASE_64_CHARSET)
-        val decodedOutput = subject.decode(encodedOutput, BASE_64_CHARSET)
+        val encodedOutput = subject.encode(messageBytes, Charsets.BASE_64)
+        val decodedOutput = subject.decode(encodedOutput, Charsets.BASE_64)
 
         assertArrayEquals(messageBytes, decodedOutput)
         assertEquals(message, String(decodedOutput))
@@ -107,8 +99,8 @@ class RebaserTest {
                 .putLong(uuid.leastSignificantBits)
                 .array()
 
-        val encodedOutput = subject.encode(messageBytes, BASE_64_CHARSET)
-        val decodedOutput = subject.decode(encodedOutput, BASE_64_CHARSET)
+        val encodedOutput = subject.encode(messageBytes, Charsets.BASE_64)
+        val decodedOutput = subject.decode(encodedOutput, Charsets.BASE_64)
         val byteBuffer = ByteBuffer.wrap(decodedOutput)
 
         assertEquals(uuid, UUID(byteBuffer.long, byteBuffer.long))
@@ -116,13 +108,13 @@ class RebaserTest {
 
     private fun assertBase64StringEncode(message: String) {
         val expectedEncodedString = Base64.getEncoder().withoutPadding().encodeToString(message.toByteArray())
-        val encodedOutput: String = subject.encode(message.toByteArray(), BASE_64_CHARSET)
+        val encodedOutput: String = subject.encode(message.toByteArray(), Charsets.BASE_64)
         assertEquals(expectedEncodedString, encodedOutput)
     }
 
     private fun assertBase64StringDecode(message: String) {
         val expectedDecodedString = String(Base64.getDecoder().decode(message))
-        val decodedOutput = String(subject.decode(message, BASE_64_CHARSET))
+        val decodedOutput = String(subject.decode(message, Charsets.BASE_64))
         assertEquals(expectedDecodedString, decodedOutput)
     }
 }
