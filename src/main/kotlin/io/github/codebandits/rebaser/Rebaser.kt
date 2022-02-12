@@ -1,5 +1,7 @@
 package io.github.codebandits.rebaser
 
+import kotlin.math.log2
+
 
 class Rebaser {
 
@@ -18,5 +20,5 @@ class Rebaser {
         return redistributeIntsToBytes(ints = stringAsInts, bitsPerInt = bitsPerCharacter(charset.size))
     }
 
-    private fun bitsPerCharacter(charsetSize: Int): Int = (Math.log(charsetSize.toDouble()) / Math.log(2.0)).toInt()
+    private fun bitsPerCharacter(charsetSize: Int): Int = log2(charsetSize.toDouble()).toInt()
 }
